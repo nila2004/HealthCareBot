@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #d3d7ad;
+            background-color: #7d7f65;
             margin: 0;
             padding: 0;
             display: flex;
@@ -15,14 +16,16 @@
             align-items: center;
             height: 100vh;
         }
+
         #chat-container {
             background-color: #fff;
             height: 70vh;
             width: 60vw;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             overflow: hidden;
         }
+
         #messages {
             background-color: whitesmoke;
             height: 61vh;
@@ -30,27 +33,32 @@
             overflow-y: auto;
             border-bottom: 1px solid #ddd;
         }
+
         #messages div {
             margin: 5px 0;
             padding: 8px;
             border-radius: 5px;
         }
+
         .user-message {
             background-color: #d1e7dd;
             align-self: flex-end;
             font-size: 18px;
             text-align: right;
         }
+
         .bot-message {
             font-size: 18px;
             background-color: #99caf8;
             align-self: flex-start;
             text-align: left;
         }
+
         #input-container {
             display: flex;
             padding: 10px;
         }
+
         #message-input {
             font-size: 18px;
             flex: 1;
@@ -58,7 +66,8 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             outline: none;
-        }   
+        }
+
         #send-btn {
             font-size: 20px;
             font-weight: bold;
@@ -71,11 +80,55 @@
             border-radius: 5px;
             outline: none;
         }
+
         #send-btn:hover {
             background-color: #0056b3;
         }
+
+        .typing {
+            display: flex;
+            align-items: center;
+            font-style: italic;
+            color: gray;
+        }
+
+        .typing-indicator {
+            display: flex;
+        }
+
+        .typing-indicator span {
+            width: 5px;
+            height: 5px;
+            background-color: gray;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.2s infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+
+            100% {
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
+
 <body>
 
     <div id="chat-container">
@@ -92,7 +145,7 @@
         const sendBtn = document.getElementById('send-btn');
 
         sendBtn.addEventListener('click', sendMessage);
-        input.addEventListener('keypress', function(event) {
+        input.addEventListener('keypress', function (event) {
             if (event.key === 'Enter') {
                 sendMessage();
             }
@@ -104,6 +157,9 @@
                 addMessage('user-message', message);
                 input.value = '';
 
+                // Show the typing animation
+                showTyping();
+
                 // Send the message to the backend for AI processing
                 fetch('http://localhost:5000/chat', {
                     method: 'POST',
@@ -112,14 +168,17 @@
                     },
                     body: JSON.stringify({ message: message })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    addMessage('bot-message', data.response);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    addMessage('bot-message', 'Error: Unable to reach AI');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        // Hide the typing animation and add bot response
+                        hideTyping();
+                        addMessage('bot-message', data.response);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        hideTyping();
+                        addMessage('bot-message', 'Error: Unable to reach AI');
+                    });
             }
         }
 
@@ -130,7 +189,25 @@
             messagesContainer.appendChild(messageDiv);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing';
+            typingDiv.id = 'typing';
+            typingDiv.innerHTML = 'Dr AI is typing... <div class="typing-indicator"><span></span><span></span><span></span></div>';
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function hideTyping() {
+            const typingDiv = document.getElementById('typing');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
     </script>
 
 </body>
+
 </html>
