@@ -4,10 +4,10 @@ Install the Google AI Python SDK
 $ pip install google-generativeai
 """
 
-import os
+
 import google.generativeai as genai
 
-genai.configure(api_key=os.environ["AIzaSyD0T3u9pB4EnH3XjckXqL0vJuq0jvwzcxI"])
+genai.configure(api_key="AIzaSyC-aiJVFc7lXEvvEjZopG7yo7ZgGarWiH4")
 
 # Create the model
 generation_config = {
@@ -29,6 +29,12 @@ chat_session = model.start_chat(
   ]
 )
 
-response = chat_session.send_message("INSERT_INPUT_HERE")
 
-print(response.text)
+while True:
+  inp = input("You: ")
+  if inp == "":
+    print("")
+    break
+  response = chat_session.send_message(inp)
+  print('Dr AI: ' + response.text)  
+  
