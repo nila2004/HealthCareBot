@@ -1,68 +1,136 @@
-<!-- templates/chat.html -->
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Chat Page</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple AI Chat App</title>
     <style>
-      /* static/chat.css */
-      .chat-container {
-        width: 400px;
-        margin: 50px auto;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        height: 500px;
-      }
-
-      .chat-box {
-        flex-grow: 1;
-        padding: 10px;
-        background-color: #f5f5f5;
-        overflow-y: scroll;
-        border-bottom: 1px solid #ccc;
-      }
-
-      .message-box {
-        display: flex;
-        padding: 10px;
-        background-color: #fff;
-      }
-
-      #message {
-        flex-grow: 1;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-right: 10px;
-      }
-
-      button {
-        padding: 10px 20px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-
-      button:hover {
-        background-color: #0056b3;
-      }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d3d7ad;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #chat-container {
+            background-color: #fff;
+            height: 70vh;
+            width: 60vw;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        #messages {
+            background-color: whitesmoke;
+            height: 61vh;
+            padding: 10px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+        }
+        #messages div {
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #d1e7dd;
+            align-self: flex-end;
+            font-size: 18px;
+            text-align: right;
+        }
+        .bot-message {
+            font-size: 18px;
+            background-color: #99caf8;
+            align-self: flex-start;
+            text-align: left;
+        }
+        #input-container {
+            display: flex;
+            padding: 10px;
+        }
+        #message-input {
+            font-size: 18px;
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }   
+        #send-btn {
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            outline: none;
+        }
+        #send-btn:hover {
+            background-color: #0056b3;
+        }
     </style>
-  </head>
-  <body>
-    <div class="chat-container">
-      <div id="chat-box" class="chat-box"></div>
+</head>
+<body>
 
-      <div class="message-box">
-        <input type="text" id="message" placeholder="Type your message..." />
-        <button id="sendMessage">Send</button>
-      </div>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <div id="input-container">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-btn">Send</button>
+        </div>
     </div>
 
-    <script src="chat.js"></script>
-  </body>
+    <script>
+        const messagesContainer = document.getElementById('messages');
+        const input = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        sendBtn.addEventListener('click', sendMessage);
+        input.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = input.value.trim();
+            if (message !== '') {
+                addMessage('user-message', message);
+                input.value = '';
+
+                // Send the message to the backend for AI processing
+                fetch('http://localhost:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    addMessage('bot-message', data.response);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    addMessage('bot-message', 'Error: Unable to reach AI');
+                });
+            }
+        }
+
+        function addMessage(className, text) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = className;
+            messageDiv.textContent = text;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+
+</body>
 </html>
