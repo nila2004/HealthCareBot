@@ -1,0 +1,68 @@
+<!-- templates/chat.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat Page</title>
+    <style>
+      /* static/chat.css */
+      .chat-container {
+        width: 400px;
+        margin: 50px auto;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+      }
+
+      .chat-box {
+        flex-grow: 1;
+        padding: 10px;
+        background-color: #f5f5f5;
+        overflow-y: scroll;
+        border-bottom: 1px solid #ccc;
+      }
+
+      .message-box {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+      }
+
+      #message {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div id="chat-box" class="chat-box"></div>
+
+      <div class="message-box">
+        <input type="text" id="message" placeholder="Type your message..." />
+        <button id="sendMessage">Send</button>
+      </div>
+    </div>
+
+    <script src="chat.js"></script>
+  </body>
+</html>
