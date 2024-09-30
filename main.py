@@ -1,19 +1,34 @@
-import openai
+"""
+Install the Google AI Python SDK
 
-openai.api_key = "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"
+$ pip install google-generativeai
+"""
 
-def chat_with_gpt(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}] 
-    )
-    return response.choices[0].message["content"].strip() 
+import os
+import google.generativeai as genai
 
-if __name__ == "__main__":  
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() in ["quit", "exit", "bye"]:
-            break
+genai.configure(api_key=os.environ["AIzaSyD0T3u9pB4EnH3XjckXqL0vJuq0jvwzcxI"])
 
-        response = chat_with_gpt(user_input)
-        print("Healthcare Bot:", response)  
+# Create the model
+generation_config = {
+  "temperature": 0.9,
+  "top_p": 1,
+  "max_output_tokens": 2048,
+  "response_mime_type": "text/plain",
+}
+
+model = genai.GenerativeModel(
+  model_name="gemini-1.0-pro",
+  generation_config=generation_config,
+  # safety_settings = Adjust safety settings
+  # See https://ai.google.dev/gemini-api/docs/safety-settings
+)
+
+chat_session = model.start_chat(
+  history=[
+  ]
+)
+
+response = chat_session.send_message("INSERT_INPUT_HERE")
+
+print(response.text)
